@@ -18,6 +18,12 @@ export class UserRepository {
   }
 
   async addUser(input: UserInput): Promise<User> {
+    const userExists = await this.getUserByName(input.name)
+
+    if (userExists) {
+      throw new Error('Usuário já cadastrado.')
+    }
+
     const [user] = await this.knex('users').insert(input, '*')
     return user
   }
@@ -25,5 +31,15 @@ export class UserRepository {
   async getUserById(id: string): Promise<User | undefined> {
     const user = await this.knex('users').where('id', id).first()
     return user
+  }
+
+  async getUserByName(name: string): Promise<User | undefined> {
+    const user = await this.knex('users').where('name', name).first()
+
+    if (!user) {
+      throw new Error('Usuário já cadastrado.')
+    } else {
+      return user
+    }
   }
 }

@@ -5,4 +5,4 @@ import { userRoutes } from './routes/index'
 export const app = Fastify()
 
 app.register(cookie)
-app.register(userRoutes, { prefix: 'users' })
+app.register(userRoutes)
