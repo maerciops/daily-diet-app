@@ -4,7 +4,6 @@ import { UserRepository, UserInput } from '../repositories/UserRepository'
 import { BodyUserSchema } from '../schema/UserSchema'
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
-import { error } from 'console'
 
 const UserRepo = new UserRepository(knex)
 
