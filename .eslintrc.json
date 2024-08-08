@@ -1,5 +1,10 @@
 {
   "extends" : [
     "@rocketseat/eslint-config/node"
-  ]
+  ],
+  "eslintConfig": {
+    "rules": {
+      "eqeqeq": "off"
+    }
+  }
 }

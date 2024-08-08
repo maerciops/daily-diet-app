@@ -1,13 +1,13 @@
 import { Knex } from 'knex'
 import { z } from 'zod'
-import { CreateUserSchema } from '../schema/UserSchema'
+import { UserSchema } from '../schema/UserSchema'
 
-export type User = z.infer<typeof CreateUserSchema>
+export type User = z.infer<typeof UserSchema>
 
 export interface UserInput {
   id: string
   name: string
-  password: string
+  hashedPassword: string
 }
 
 export class UserRepository {
@@ -34,12 +34,7 @@ export class UserRepository {
   }
 
   async getUserByName(name: string): Promise<User | undefined> {
-    const user = await this.knex('users').where('name', name).first()
-
-    if (!user) {
-      throw new Error('Usuário já cadastrado.')
-    } else {
-      return user
-    }
+    const user = await this.knex('users').where('name', name).first().select('name', 'hashedPassword', 'id')
+    return user
   }
 }
