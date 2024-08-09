@@ -72,7 +72,9 @@ export class UserController {
       if (!isPassword) {
         throw new Error('Senha incorreta.')
       }
-      const token = await generateToken(user.hashedPassword)
+      
+      const token = await generateToken(user.id)
+
       return reply.code(200).send({token})
     } catch (error) {
       return reply.code(401).send(error)
