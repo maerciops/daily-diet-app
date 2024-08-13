@@ -7,7 +7,7 @@ export const authMiddleware = async (request: FastifyRequest, reply: FastifyRepl
         const authHeader = request.headers.authorization
 
         if (!authHeader) {
-            reply.code(401).send({ error: 'Token faltando.' })
+            reply.code(401).send({ error: 'Faça login primeiro.' })
             return
         }
 

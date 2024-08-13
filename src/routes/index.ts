@@ -1,9 +1,11 @@
 import { FastifyInstance } from 'fastify'
 import { UserController } from '../controllers/UserController'
+import { MealsController } from '../controllers/MealsController'
 import { knex } from '../database'
 import { authMiddleware } from '../middlewares/auth-middleware'
 
 const User = new UserController()
+const Meals = new MealsController()
 
 export async function userRoutes(app: FastifyInstance) {
   //USERS
@@ -13,7 +15,7 @@ export async function userRoutes(app: FastifyInstance) {
     return { aUser }
   })
 
-  app.get('/api/users/',{ preHandler: [ authMiddleware ] }, async (request) => {
+  app.get('/api/users/', async (request) => {
     const aUser = await knex('users').select('*')
     //const aIdUser = (request as any).idUser
     return aUser
@@ -30,10 +32,14 @@ export async function userRoutes(app: FastifyInstance) {
   })
 
   //MEALS
-  app.post('/api/meals/', async (request, reply) => {
-    const aUser = await User.addUser(request, reply)
+  app.post('/api/meals/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMeal = await Meals.addMeal(request, reply)
 
-    return { aUser }
+    return { aMeal }
   })
+
+  app.delete('/api/meals/truncate/', async () => {
+    await knex('meals').truncate()
+  })  
 
 }
