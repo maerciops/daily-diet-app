@@ -38,6 +38,18 @@ export async function userRoutes(app: FastifyInstance) {
     return { aMeal }
   })
 
+  app.put('/api/meals/:id/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMeal = await Meals.editMeal(request, reply)
+
+    return { aMeal }
+  })  
+  
+  app.delete('/api/meals/:id/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMeal = await Meals.deleteMeal(request, reply)
+
+    return { aMeal }
+  })  
+
   app.delete('/api/meals/truncate/', async () => {
     await knex('meals').truncate()
   })  

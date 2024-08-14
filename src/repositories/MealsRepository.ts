@@ -1,8 +1,9 @@
 import { Knex } from 'knex'
 import { z } from 'zod'
-import { CreateMealsSchema } from '../schema/MealsSchema'
+import { CreateMealsSchema, GetMealsSchema } from '../schema/MealsSchema'
 
 export type Meals = z.infer<typeof CreateMealsSchema>
+export type EditMeals = z.infer<typeof GetMealsSchema>
 
 export interface MealsInput {
   id: string
@@ -31,7 +32,13 @@ export class MealsRepository {
     return aMeal
   }
 
-  async getMealById(id: string): Promise<Meals | undefined> {
+  async deleteMeal(id: string): Promise<number> {
+    const result = await this.knex('meals').where('id', id).del()
+    console.log(result)
+    return result
+  }  
+
+  async getMealById(id: string): Promise<EditMeals> {
     const meal = await this.knex('meals').where('id', id).first()
     return meal
   }  

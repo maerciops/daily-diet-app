@@ -1,9 +1,8 @@
 import { randomUUID } from 'crypto'
 import { knex } from '../database'
 import { MealsInput, MealsRepository } from '../repositories/MealsRepository'
-import { CreateMealsSchema } from '../schema/MealsSchema'
+import { CreateMealsSchema, GetMealsParamsSchema } from '../schema/MealsSchema'
 import { FastifyRequest, FastifyReply } from 'fastify'
-//import { z } from 'zod' se precisar tratar erro do zod no trycatch
 
 const MealsRepo = new MealsRepository(knex)
 
@@ -35,12 +34,45 @@ export class MealsController {
   }
 
   async editMeal(request: FastifyRequest, reply: FastifyReply) {
+    try {      
+      const resultParams = GetMealsParamsSchema.safeParse(request.params)
+
+      if (!resultParams.success) {
+        throw new Error('Id da requisição inválido.')
+      }
+
+      const { id } = GetMealsParamsSchema.parse(request.params)
+      
+      const aMeal = await MealsRepo.getMealById(id)
+
+      if (!aMeal) {
+        throw new Error('Refeição não encontrada.')
+      }
+
+      await MealsRepo.deleteMeal(id)
+
+      return reply.code(204).send('Registro excluído com sucesso.')
+    } catch (error) {
+      return reply.code(400).send(error)
+    }
+  }
+
+  async deleteMeal(request: FastifyRequest, reply: FastifyReply) {
     try {
       const editMealSchema = CreateMealsSchema.required()
+      
+      const resultParams = GetMealsParamsSchema.safeParse(request.params)
+
+      if (!resultParams.success) {
+        throw new Error('Id da requisição inválido.')
+      }
+
+      const { id } = GetMealsParamsSchema.parse(request.params)
 
       const { name, description, date, time, in_diet } = editMealSchema.parse(request.body)
-      const user_id = ''
-      const id = ''
+      
+      const { user_id } = await MealsRepo.getMealById(id)
+      
       const mealInput: MealsInput = {
         id,
         name,
@@ -55,7 +87,7 @@ export class MealsController {
 
       return reply.code(200).send(meal)
     } catch (error) {
-      return reply.code(400).send('Erro não tratado.')
+      return reply.code(400).send(error)
     }
-  }
+  }  
 }
