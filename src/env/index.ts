@@ -10,8 +10,8 @@ if (process.env.NODE_ENV === 'test') {
 const envSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']).default('production'),
   DATABASE_URL: z.string(),
-  PORT: z.number().default(3333),
-  SECRET: z.string().default('AKDH#$%387492'),
+  PORT_SERVER: z.string(),
+  SECRET_KEY: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)

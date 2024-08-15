@@ -10,9 +10,9 @@ export const authMiddleware = async (request: FastifyRequest, reply: FastifyRepl
             reply.code(401).send({ error: 'Faça login primeiro.' })
             return
         }
-
+        
         const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, env.SECRET);
+        const decoded = jwt.verify(token, env.SECRET_KEY);
         
         (request as any).idUser = (decoded as any).id
     } catch (error) {

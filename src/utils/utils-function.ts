@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { env } from '../env';
 
-const secretKey = env.SECRET
+const secretKey = env.SECRET_KEY
 
 export async function generateToken (userId: string) {
     return jwt.sign({ id: userId }, secretKey, { expiresIn: '1h' })
