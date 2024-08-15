@@ -42,7 +42,25 @@ export async function userRoutes(app: FastifyInstance) {
     const aMeal = await Meals.editMeal(request, reply)
 
     return { aMeal }
-  })  
+  })
+  
+  app.get('/api/meals/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMeal = await Meals.getMealByUser(request, reply)
+
+    return { aMeal }
+  })   
+
+  app.get('/api/meals/:id/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMeal = await Meals.getMealId(request, reply)
+
+    return { aMeal }
+  }) 
+  
+  app.get('/api/meals/metrics/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
+    const aMetrics = await Meals.getMetricsMeals(request, reply)
+
+    return { aMetrics }
+  })   
   
   app.delete('/api/meals/:id/', { preHandler: [ authMiddleware ] }, async (request, reply) => {
     const aMeal = await Meals.deleteMeal(request, reply)

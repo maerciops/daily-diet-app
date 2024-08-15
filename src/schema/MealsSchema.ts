@@ -20,3 +20,11 @@ export const GetMealsSchema = z.object({
 export const GetMealsParamsSchema = z.object({
   id: z.string().uuid(),
 })
+
+export const MetricsMealsSchema = z.object({
+  totalMeals: z.number(),
+  totalMealsInDiet: z.number(), 
+  totalMealsNotInDiet: z.number(), 
+ // bestSeqInDiet: z.number(),
+ // percMealsInDiet: z.number(), 
+})

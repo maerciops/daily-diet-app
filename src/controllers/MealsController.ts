@@ -33,7 +33,7 @@ export class MealsController {
     }
   }
 
-  async editMeal(request: FastifyRequest, reply: FastifyReply) {
+  async deleteMeal(request: FastifyRequest, reply: FastifyReply) {
     try {      
       const resultParams = GetMealsParamsSchema.safeParse(request.params)
 
@@ -42,8 +42,10 @@ export class MealsController {
       }
 
       const { id } = GetMealsParamsSchema.parse(request.params)
+
+      const user_id = (request as any).idUser
       
-      const aMeal = await MealsRepo.getMealById(id)
+      const aMeal = await MealsRepo.getMealById(id, user_id)
 
       if (!aMeal) {
         throw new Error('Refeição não encontrada.')
@@ -57,7 +59,7 @@ export class MealsController {
     }
   }
 
-  async deleteMeal(request: FastifyRequest, reply: FastifyReply) {
+  async editMeal(request: FastifyRequest, reply: FastifyReply) {
     try {
       const editMealSchema = CreateMealsSchema.required()
       
@@ -71,7 +73,13 @@ export class MealsController {
 
       const { name, description, date, time, in_diet } = editMealSchema.parse(request.body)
       
-      const { user_id } = await MealsRepo.getMealById(id)
+      const user_id = (request as any).idUser
+
+      const aMeal = await MealsRepo.getMealById(id, user_id)
+      
+      if (!aMeal) {
+        throw new Error('Refeição não encontrada para seu usuário.')
+      }      
       
       const mealInput: MealsInput = {
         id,
@@ -90,4 +98,60 @@ export class MealsController {
       return reply.code(400).send(error)
     }
   }  
+
+  async getMealByUser(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user_id = (request as any).idUser
+      
+      const meal = await MealsRepo.getMealByUser(user_id)
+      
+      if (meal.length === 0) {
+        return reply.code(404).send('Nenhum registro encontrado.')
+      }
+      
+      return reply.code(200).send(meal)
+    } catch (error) {
+      return reply.code(400).send(error) 
+    }
+  }
+
+  async getMealId(request: FastifyRequest, reply: FastifyReply) {
+    try {      
+      const resultParams = GetMealsParamsSchema.safeParse(request.params)
+
+      if (!resultParams.success) {
+        return reply.code(400).send('Id da requisição inválido.')
+      }
+
+      const { id } = GetMealsParamsSchema.parse(request.params) 
+
+      const user_id = (request as any).idUser
+      
+      const meal = await MealsRepo.getMealById(id, user_id)
+      
+      if (!meal) {
+        return reply.code(404).send('Refeição não encontrada.')
+      }
+      
+      return reply.code(200).send(meal)
+    } catch (error) {
+      return reply.code(400).send(error) 
+    }
+  }  
+
+  async getMetricsMeals(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user_id = (request as any).idUser
+      
+      const metrics = await MealsRepo.getTotalMeal(user_id)
+
+      if (metrics === 0) {
+        return reply.code(404).send('Nenhuma refeição registrada.')
+      }
+
+      return reply.code(200).send(metrics)
+    } catch (error) {
+      return reply.code(400).send(error)
+    } 
+  }
 }
